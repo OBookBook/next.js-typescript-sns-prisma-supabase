@@ -9,7 +9,7 @@ const Post = () => {
             alt="User Avatar"
           />
           <div>
-            <h2 className="font-semibold text-md">shincode</h2>
+            <h2 className="font-semibold text-md">naobe</h2>
             <p className="text-gray-500 text-sm">04/04 13:12</p>
           </div>
         </div>
