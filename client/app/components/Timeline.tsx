@@ -1,3 +1,5 @@
+import Post from "./Post";
+
 const Timeline = () => {
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -16,6 +18,7 @@ const Timeline = () => {
             </button>
           </form>
         </div>
+        <Post />
       </main>
     </div>
   );
