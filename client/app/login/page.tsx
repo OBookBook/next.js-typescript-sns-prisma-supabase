@@ -1,4 +1,46 @@
+import { z } from "zod";
+import { redirect } from "next/navigation";
+
+const schema = z.object({
+  email: z.string().email("有効なメールアドレスを入力してください"),
+  password: z.string().min(8, "パスワードは8文字以上必要です"),
+});
+
 const LoginPage = () => {
+  async function handleLogin(formData: FormData) {
+    "use server";
+
+    const rawFormData = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    try {
+      const validatedFields = schema.parse(rawFormData);
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: validatedFields.email,
+          password: validatedFields.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
+      }
+
+      const { token } = await response.json();
+    } catch (error: any) {
+      console.log(error);
+      return error;
+    }
+    redirect("/");
+  }
+
   return (
     <div className="h-[calc(100vh-100px)] bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center p-6">
       <div className="max-w-md w-full space-y-8 bg-white/70 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
@@ -11,7 +53,7 @@ const LoginPage = () => {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6">
+        <form action={handleLogin} className="mt-8 space-y-6">
           <div className="space-y-6">
             <div>
               <label
