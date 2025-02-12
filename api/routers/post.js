@@ -2,8 +2,15 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const router = require("express").Router();
 
+//**
+// POST: /api/posts/post
+// {
+//   "content": "next.js"
+// }
+//  */
 router.post("/post", async (req, res) => {
   const { content } = req.body;
+  console.log(content);
 
   if (!content) return res.status(400).json({ error: "Content is required" });
 
