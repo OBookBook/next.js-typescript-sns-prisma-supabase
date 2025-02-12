@@ -2,7 +2,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
-  name: z.string().min(1, "名前は必須です"),
+  username: z.string().min(1, "名前は必須です"),
   email: z.string().email("有効なメールアドレスを入力してください"),
   password: z.string().min(8, "パスワードは8文字以上必要です"),
 });
@@ -25,7 +25,7 @@ const SignupPage = () => {
             "use server";
 
             const rawFormData = {
-              name: formData.get("name"),
+              username: formData.get("username"),
               email: formData.get("email"),
               password: formData.get("password"),
             };
@@ -41,15 +41,18 @@ const SignupPage = () => {
                     "Content-Type": "application/json",
                   },
                   body: JSON.stringify({
-                    username: validatedFields.name,
+                    username: validatedFields.username,
                     email: validatedFields.email,
                     password: validatedFields.password,
                   }),
                 }
               );
 
-              if (!response.ok) throw new Error("Registration failed");
-              redirect("/");
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Registration failed");
+              }
+              return redirect("/");
             } catch (error) {
               console.log(error);
             }
@@ -59,17 +62,17 @@ const SignupPage = () => {
           <div className="space-y-6">
             <div>
               <label
-                htmlFor="name"
+                htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
                 お名前
               </label>
               <div className="mt-1">
                 <input
-                  id="name"
-                  name="name"
+                  id="username"
+                  name="username"
                   type="text"
-                  autoComplete="name"
+                  autoComplete="username"
                   required
                   className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 />
