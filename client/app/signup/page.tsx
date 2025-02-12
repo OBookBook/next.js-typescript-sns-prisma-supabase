@@ -8,6 +8,40 @@ const schema = z.object({
 });
 
 const SignupPage = () => {
+  async function handleSignup(formData: FormData) {
+    "use server";
+
+    const rawFormData = {
+      username: formData.get("username"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    try {
+      const validatedFields = schema.parse(rawFormData);
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: validatedFields.username,
+          email: validatedFields.email,
+          password: validatedFields.password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
+      }
+    } catch (error: any) {
+      console.log(error);
+      return error;
+    }
+    redirect("/");
+  }
+
   return (
     <div className="h-[calc(100vh-64px)] bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center p-6">
       <div className="max-w-md w-full space-y-8 bg-white/70 backdrop-blur-lg rounded-2xl p-8 shadow-xl">
@@ -20,45 +54,7 @@ const SignupPage = () => {
           </p>
         </div>
 
-        <form
-          action={async (formData: FormData) => {
-            "use server";
-
-            const rawFormData = {
-              username: formData.get("username"),
-              email: formData.get("email"),
-              password: formData.get("password"),
-            };
-
-            try {
-              const validatedFields = schema.parse(rawFormData);
-
-              const response = await fetch(
-                "http://localhost:5000/api/auth/register",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    username: validatedFields.username,
-                    email: validatedFields.email,
-                    password: validatedFields.password,
-                  }),
-                }
-              );
-
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Registration failed");
-              }
-              return redirect("/");
-            } catch (error) {
-              console.log(error);
-            }
-          }}
-          className="mt-8 space-y-6"
-        >
+        <form action={handleSignup} className="mt-8 space-y-6">
           <div className="space-y-6">
             <div>
               <label
