@@ -1,44 +1,19 @@
-import { z } from "zod";
+"use client";
+
+import { loginAction } from "./actions";
+import { useAuth } from "../context/auth";
 import { redirect } from "next/navigation";
 
-const schema = z.object({
-  email: z.string().email("有効なメールアドレスを入力してください"),
-  password: z.string().min(8, "パスワードは8文字以上必要です"),
-});
-
 const LoginPage = () => {
+  const { login } = useAuth();
+
   async function handleLogin(formData: FormData) {
-    "use server";
+    const result = await loginAction(formData);
 
-    const rawFormData = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
-
-    try {
-      const validatedFields = schema.parse(rawFormData);
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: validatedFields.email,
-          password: validatedFields.password,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed");
-      }
-
-      const { token } = await response.json();
-    } catch (error: any) {
-      console.log(error);
-      return error;
+    if (result.success) {
+      login(result.token);
+      redirect("/");
     }
-    redirect("/");
   }
 
   return (
