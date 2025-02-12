@@ -11,7 +11,23 @@ const SignupPage = () => {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6">
+        <form
+          action={async (formData: FormData) => {
+            "use server";
+
+            const rawFormData = {
+              name: formData.get("name"),
+              email: formData.get("email"),
+              password: formData.get("password"),
+            };
+
+            // バリデーションやデータベースへの保存などの処理をここに実装
+            console.log(rawFormData);
+
+            // エラーハンドリングやリダイレクトなどの処理も追加可能
+          }}
+          className="mt-8 space-y-6"
+        >
           <div className="space-y-6">
             <div>
               <label
