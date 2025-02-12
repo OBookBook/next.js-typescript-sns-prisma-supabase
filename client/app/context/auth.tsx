@@ -1,6 +1,15 @@
 import { createContext, useContext } from "react";
 
-const AuthContext = createContext({
+interface AuthContextType {
+  login: (token: string) => void;
+  logout: () => void;
+}
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: () => {},
 });
@@ -9,7 +18,7 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (token: string) => {
     localStorage.setItem("auth_token", token);
   };
