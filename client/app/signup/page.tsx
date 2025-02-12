@@ -32,13 +32,26 @@ const SignupPage = () => {
 
             try {
               const validatedFields = schema.parse(rawFormData);
-              console.log(validatedFields);
-              // データベースへの保存処理など
-              redirect("/dashboard");
-              return;
+
+              const response = await fetch(
+                "http://localhost:5000/api/auth/register",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    username: validatedFields.name,
+                    email: validatedFields.email,
+                    password: validatedFields.password,
+                  }),
+                }
+              );
+
+              if (!response.ok) throw new Error("Registration failed");
+              redirect("/");
             } catch (error) {
               console.log(error);
-              return;
             }
           }}
           className="mt-8 space-y-6"
