@@ -14,16 +14,19 @@ const router = require("express").Router();
 //  */
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: {
-      username,
-      email,
-      password: hashedPassword,
-    },
-  });
-
-  return res.json({ user });
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+    return res.status(201).json({ user });
+  } catch (error) {
+    return res.status(500).json({ error: "User registration failed" });
+  }
 });
 
 //**
