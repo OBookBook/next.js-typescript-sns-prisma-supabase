@@ -1,3 +1,12 @@
+import { z } from "zod";
+import { redirect } from "next/navigation";
+
+const schema = z.object({
+  name: z.string().min(1, "名前は必須です"),
+  email: z.string().email("有効なメールアドレスを入力してください"),
+  password: z.string().min(8, "パスワードは8文字以上必要です"),
+});
+
 const SignupPage = () => {
   return (
     <div className="h-[calc(100vh-64px)] bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center p-6">
@@ -21,10 +30,16 @@ const SignupPage = () => {
               password: formData.get("password"),
             };
 
-            // バリデーションやデータベースへの保存などの処理をここに実装
-            console.log(rawFormData);
-
-            // エラーハンドリングやリダイレクトなどの処理も追加可能
+            try {
+              const validatedFields = schema.parse(rawFormData);
+              console.log(validatedFields);
+              // データベースへの保存処理など
+              redirect("/dashboard");
+              return;
+            } catch (error) {
+              console.log(error);
+              return;
+            }
           }}
           className="mt-8 space-y-6"
         >
