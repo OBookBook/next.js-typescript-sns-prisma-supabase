@@ -3,50 +3,28 @@
 import Post from "./Post";
 import { PostType } from "../types/type";
 import { useEffect, useState } from "react";
+import { fetchLatestPosts, createPost } from "../lib/actions";
 
 const Timeline = () => {
   const [content, setContent] = useState<string>("");
   const [latestPosts, setLatestPosts] = useState<PostType[]>([]);
 
   useEffect(() => {
-    const fetchLatestPosts = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/posts/post`
-        );
-        const data = await response.json();
-        setLatestPosts(data.latestPosts);
-      } catch (error) {
-        console.error(error);
-      }
+    const loadPosts = async () => {
+      const posts = await fetchLatestPosts();
+      setLatestPosts(posts);
     };
-    fetchLatestPosts();
+    loadPosts();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/posts/post`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: (e.target as HTMLFormElement).content.value,
-          }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to post");
-      }
-      const data = await response.json();
-      setLatestPosts((prevPosts) => [...prevPosts, data.user]);
+    const newPost = await createPost(
+      (e.target as HTMLFormElement).content.value
+    );
+    if (newPost) {
+      setLatestPosts((prevPosts) => [...prevPosts, newPost]);
       setContent("");
-    } catch (error) {
-      console.error(error);
     }
   };
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { loginAction } from "./actions";
 import { useAuth } from "../context/auth";
 import { redirect } from "next/navigation";
+import { loginAction } from "../lib/actions";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -11,7 +11,7 @@ const LoginPage = () => {
     const result = await loginAction(formData);
 
     if (result.success) {
-      login(result.token);
+      login(result.token || "");
       redirect("/");
     }
   }
