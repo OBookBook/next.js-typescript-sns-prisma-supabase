@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { redirect } from "next/navigation";
 import { PostType } from "../types/type";
+import { redirect } from "next/navigation";
 
 // バリデーションスキーマ
 const signupSchema = z.object({
@@ -25,7 +25,7 @@ type RequestOptions = {
 };
 
 // プライベートなAPIクライアント関数
-async function apiClient<T>(
+export async function apiClient<T>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
