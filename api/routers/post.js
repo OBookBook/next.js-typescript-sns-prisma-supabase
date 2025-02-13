@@ -20,6 +20,9 @@ router.post("/post", async (req, res) => {
         content,
         authorId: 1,
       },
+      include: {
+        author: true,
+      },
     });
     return res.status(201).json({ user });
   } catch (error) {
@@ -39,6 +42,9 @@ router.get("/post", async (req, res) => {
       take: 10,
       orderBy: {
         createdAt: "desc",
+      },
+      include: {
+        author: true,
       },
     });
 
