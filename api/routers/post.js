@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const router = require("express").Router();
+const isAuthenticated = require("../middlewares/isAuthenticated");
 
 //**
 // POST: /api/posts/post
@@ -8,7 +9,7 @@ const router = require("express").Router();
 //   "content": "next.js"
 // }
 //  */
-router.post("/post", async (req, res) => {
+router.post("/post", isAuthenticated, async (req, res) => {
   const { content } = req.body;
   console.log(content);
 
@@ -18,7 +19,7 @@ router.post("/post", async (req, res) => {
     const user = await prisma.post.create({
       data: {
         content,
-        authorId: 1,
+        authorId: req.userId,
       },
       include: {
         author: true,
