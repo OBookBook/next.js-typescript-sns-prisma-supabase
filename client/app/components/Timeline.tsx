@@ -1,26 +1,44 @@
 "use client";
 
 import Post from "./Post";
-import { useState } from "react";
 import { PostType } from "../types/type";
+import { useEffect, useState } from "react";
 
 const Timeline = () => {
   const [content, setContent] = useState<string>("");
   const [latestPosts, setLatestPosts] = useState<PostType[]>([]);
 
+  useEffect(() => {
+    const fetchLatestPosts = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/posts/post`
+        );
+        const data = await response.json();
+        setLatestPosts(data.latestPosts);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchLatestPosts();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/posts/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: (e.target as HTMLFormElement).content.value,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/posts/post`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: (e.target as HTMLFormElement).content.value,
+          }),
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to post");
       }
