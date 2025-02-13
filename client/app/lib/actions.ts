@@ -13,15 +13,18 @@ export async function handlePost(formData: FormData) {
 
   try {
     const validatedFields = schema.parse(rawFormData);
-    const response = await fetch("http://localhost:5000/api/posts/post", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: validatedFields.content,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/post`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: validatedFields.content,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();

@@ -15,16 +15,19 @@ export async function loginAction(formData: FormData) {
 
   try {
     const validatedFields = schema.parse(rawFormData);
-    const response = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: validatedFields.email,
-        password: validatedFields.password,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: validatedFields.email,
+          password: validatedFields.password,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
